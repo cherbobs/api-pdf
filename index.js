@@ -39,43 +39,44 @@ class PdfFacade {
     }   
 }
 
-class ReportService {
-    generateTimeReport() {
-        return new Promise((resolve, reject) => {
-            resolve({ ok: true });
-        });
-    }
-}
+
 
 
 // Créer l'objet Express
 const app = express();
 const router = new express.Router();
 
+// Utilisation du middleware pour parser le corps des requêtes
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+
+// Création des instances des classes PdfFacade
+const pdfFacade = new PdfFacade();
 
 
 app.use('/api', router);
 
-// Création des instances des classes PdfFacade et ReportService
-const pdfFacade = new PdfFacade();
-const reportGenerator = new ReportService();
+app.get('/', (_, res) => {
+    res.sendFile(__dirname + '/index.html');
+  });
 
 
 // Route pour générer le rapport de temps
-router.get('/TimeReport', async (req, res) => {
+router.post('/generate-pdf', async (req, res) => {
+    const { date, first_name, name, date_achat, prix } = req.body;
+
     const data = await pdfFacade.createDocument()
-        .writeTitle('Ceci est un test')
-        .writeLabelValuePair('Date', new Date().toISOString())
-        .writeLabelValuePair('Valid', true)
+        .writeTitle('Facture')
+        .writeLabelValuePair('Date', date)
+        .writeLabelValuePair('Prénom', first_name)
+        .writeLabelValuePair('Nom', name)
+        .writeLabelValuePair("Date d'achat", date_achat)
+        .writeLabelValuePair('Prix', prix)
         .closeAndGetBytes();
     res.setHeader('Content-Type', 'application/pdf');
     res.send(data);
 });
-
-
-app.get('/', (_, res) => {
-    res.send('Hello, this is your root route!');
-  });
 
 
 
