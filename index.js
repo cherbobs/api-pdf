@@ -2,7 +2,7 @@ const express = require('express')
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 require('dotenv').config();
-require('./db');
+// require('./db');
 
 
 
@@ -68,6 +68,7 @@ app.get('/', (_, res) => {
 
 // Route pour générer le rapport de temps
 router.post('/generate-pdf', async (req, res) => {
+    console.log("eeeeeeeeeeeeee");
     const { date, first_name, name, date_achat, prix } = req.body;
 
     const data = await pdfFacade.createDocument()
@@ -78,6 +79,7 @@ router.post('/generate-pdf', async (req, res) => {
         .writeLabelValuePair("Date d'achat", date_achat)
         .writeLabelValuePair('Prix', prix)
         .closeAndGetBytes();
+    res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Type', 'application/pdf');
     res.send(data);
 });
