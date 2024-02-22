@@ -1,6 +1,10 @@
 const express = require('express')
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
+require('dotenv').config();
+require('./db');
+
+
 
 const FileName = 'facture.pdf';
 
@@ -89,3 +93,5 @@ app.listen(PORT,
       console.info("API Listening on port " + PORT);
     }
   );
+
+
